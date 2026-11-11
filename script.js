@@ -7,29 +7,16 @@ const tilt=document.querySelector('.tilt-card');if(tilt&&!reducedMotion&&matchMe
 
 // Links externos e navegação continuam funcionando sem WebGL.
 
-document.querySelectorAll('.reel-card').forEach(card=>{
-  const video=card.querySelector('video');
-  const button=card.querySelector('.reel-control');
-  if(!video||!button)return;
-  const sync=()=>{const playing=!video.paused;card.classList.toggle('is-playing',playing);button.textContent=playing?'Ⅱ':'▶';button.setAttribute('aria-pressed',String(playing));button.setAttribute('aria-label',playing?'Pausar vídeo':'Reproduzir vídeo')};
-  button.addEventListener('click',async()=>{if(video.paused){try{await video.play()}catch(e){console.warn('Vídeo não pôde ser reproduzido',e)}}else video.pause();sync()});
-  video.addEventListener('play',sync);video.addEventListener('pause',sync);
-});
 const heroVideo=document.querySelector('.hero-video');
 if(heroVideo){heroVideo.addEventListener('error',()=>heroVideo.style.display='none');if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)heroVideo.pause()}
 
 document.querySelectorAll('.reel-card').forEach(card=>{
  const video=card.querySelector('.reel-video');
- const button=card.querySelector('.reel-control');
- if(!video||!button)return;
- const unavailable=()=>{card.classList.remove('media-ready','is-playing');button.disabled=true;video.pause();video.style.visibility='hidden'};
- const ready=()=>{card.classList.add('media-ready');button.disabled=false;video.style.visibility='visible'};
+ if(!video)return;
+ const ready=()=>{card.classList.add('media-ready');video.style.visibility='visible'};
+ const unavailable=()=>{card.classList.remove('media-ready');video.style.visibility='hidden'};
  video.addEventListener('loadeddata',ready);
  video.addEventListener('error',unavailable);
- const source=video.querySelector('source');
- if(!source||!source.getAttribute('src'))unavailable();
- else if(video.readyState>=2)ready();
- else unavailable();
- // Load the media explicitly after listeners are installed.
- if(source&&source.getAttribute('src'))video.load();
+ if(video.readyState>=2)ready();else unavailable();
+ video.load();
 });
