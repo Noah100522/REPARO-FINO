@@ -6,3 +6,14 @@ const progress=document.querySelector('.scroll-progress');const orbit=document.q
 const tilt=document.querySelector('.tilt-card');if(tilt&&!reducedMotion&&matchMedia('(hover:hover) and (pointer:fine)').matches){tilt.addEventListener('pointermove',e=>{const r=tilt.getBoundingClientRect();const x=(e.clientX-r.left)/r.width;const y=(e.clientY-r.top)/r.height;tilt.style.setProperty('--rx',((.5-y)*14)+'deg');tilt.style.setProperty('--ry',((x-.5)*18)+'deg');tilt.style.setProperty('--mx',(x*100)+'%');tilt.style.setProperty('--my',(y*100)+'%')});tilt.addEventListener('pointerleave',()=>{tilt.style.setProperty('--rx','5deg');tilt.style.setProperty('--ry','-8deg');tilt.style.setProperty('--mx','50%');tilt.style.setProperty('--my','50%')})}
 
 // Links externos e navegação continuam funcionando sem WebGL.
+
+document.querySelectorAll('.reel-card').forEach(card=>{
+  const video=card.querySelector('video');
+  const button=card.querySelector('.reel-control');
+  if(!video||!button)return;
+  const sync=()=>{const playing=!video.paused;card.classList.toggle('is-playing',playing);button.textContent=playing?'Ⅱ':'▶';button.setAttribute('aria-pressed',String(playing));button.setAttribute('aria-label',playing?'Pausar vídeo':'Reproduzir vídeo')};
+  button.addEventListener('click',async()=>{if(video.paused){try{await video.play()}catch(e){console.warn('Vídeo não pôde ser reproduzido',e)}}else video.pause();sync()});
+  video.addEventListener('play',sync);video.addEventListener('pause',sync);
+});
+const heroVideo=document.querySelector('.hero-video');
+if(heroVideo){heroVideo.addEventListener('error',()=>heroVideo.style.display='none');if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)heroVideo.pause()}
