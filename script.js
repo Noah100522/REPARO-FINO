@@ -17,3 +17,19 @@ document.querySelectorAll('.reel-card').forEach(card=>{
 });
 const heroVideo=document.querySelector('.hero-video');
 if(heroVideo){heroVideo.addEventListener('error',()=>heroVideo.style.display='none');if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)heroVideo.pause()}
+
+document.querySelectorAll('.reel-card').forEach(card=>{
+ const video=card.querySelector('.reel-video');
+ const button=card.querySelector('.reel-control');
+ if(!video||!button)return;
+ const unavailable=()=>{card.classList.remove('media-ready','is-playing');button.disabled=true;video.pause();video.style.visibility='hidden'};
+ const ready=()=>{card.classList.add('media-ready');button.disabled=false;video.style.visibility='visible'};
+ video.addEventListener('loadeddata',ready);
+ video.addEventListener('error',unavailable);
+ const source=video.querySelector('source');
+ if(!source||!source.getAttribute('src'))unavailable();
+ else if(video.readyState>=2)ready();
+ else unavailable();
+ // Load the media explicitly after listeners are installed.
+ if(source&&source.getAttribute('src'))video.load();
+});
